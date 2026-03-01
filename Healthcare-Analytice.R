@@ -1,5 +1,8 @@
 library(tidyverse)
 library(moments)
+library(ggpubr)
+library(gridExtra)
+
 
 # data
 set.seed(999)
@@ -20,19 +23,26 @@ health_data <- health_data %>%
 #view(health_data)
 
 
-#
-shapiro_test <- shapiro.test(health_data$Recovery_Days)
-print(shapiro_test)
+# Normality Check  (histogram & Q-Q plot)
+# histogram 
+p1 <- ggplot(health_data, aes(x = Recovery_Days)) + 
+  geom_histogram(aes(y = ..density..), bins = 30, fill = "steelblue", alpha = 0.6) +
+  geom_density(color = "red", size = 1) +
+  theme_minimal() +
+  labs(title = "Recovery Days Distribution", x = "Recovery Days", y = "Density")
 
-# visualization  - 1
-ggplot(health_data, aes(x = Recovery_Days)) + 
-  geom_histogram(aes(y = ..density..), fill = "steelblue", alpha = 0.6) +
-  geom_density(color = "red", size = 1 ) +
-  labs(title = "Recovery Time Distribution")
+# Q-Q plot 
+p2 <- ggplot(health_data, aes(sample = Recovery_Days)) +
+  stat_qq(color = "steelblue", alpha = 0.6) + 
+  stat_qq_line(color = "red", size = 1) + 
+  theme_minimal() +
+  labs(title = "Normal Q-Q Plot",
+       subtitle = "Dots on the red line = Normal Data",
+       x = "Theoretical", y = "Sample")
 
-#probability 
-#prob_less_10 = pnorm(10, mean = mean(health_data$Recovery_Days), sd = sd(health_data$Recovery_Days))
-#print(prob_less_10)
+combined_normality_plot <- grid.arrange(p1, p2, ncol = 2)
+ggsave("normality_analysis.png", combined_normality_plot, width = 10, height = 5)
+
 
 
 # Hypothesis testing 
@@ -45,15 +55,17 @@ tukey_test <- TukeyHSD(anova_result)
 print(tukey_test)
 
 
-# visualization  - 2
-ggplot(health_data, aes(x = Treatment_group, y = Recovery_Days, fill = Treatment_group)) +
-  geom_boxplot(alpa = 0.7, outlier.shape = NA) +
+# visualization - 2 ((Boxplot with Jitter))
+p3 <- ggplot(health_data, aes(x = Treatment_group, y = Recovery_Days, fill = Treatment_group)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(width = 0.2, alpha = 0.2) +
   theme_classic()+
   labs(title = "Treatment Efficacy Comparison",
        subtitle = "Boxplot showing distribution of recovery days across drug groups",
        x = "Drug Type", y = "Recovery Days")
 
+
+ggsave("treatment_efficacy.png", p3, width = 8, height = 5)
 
 # correlation and regression 
 regression_model <- lm(Recovery_Days ~ Age + Dosage_mg + Treatment_group, data = health_data)
