@@ -19,14 +19,14 @@ Before performing parametric tests, I validated the data distribution using the 
 - **Finding:** The recovery days followed a Normal Distribution (p > 0.05).
 - **Probability:** Calculated that there is a significant probability of patients recovering faster when administered with Drug A.
 
-![Recovery Distribution](img1.png)
+![Normality Analysis](normality_analysis.png)
 
 ### 2. Hypothesis Testing (ANOVA & Tukey HSD)
 I conducted a **One-way ANOVA** to test if all treatments are equally effective.
 - **Result:** The F-statistic was significant (p < 0.05), rejecting the Null Hypothesis.
 - **Tukey Test:** Confirmed that **Drug A** significantly reduces recovery time by ~5 days compared to the Placebo.
 
-![Treatment Efficacy](img2.png)
+![Treatment Efficacy](treatment_efficacy.png)
 
 ### 3. Multiple Linear Regression
 To understand the relationship between variables, I built a regression model:
